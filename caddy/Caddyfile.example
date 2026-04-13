@@ -1,0 +1,19 @@
+squee.online {
+    log {
+        output file /var/log/caddy/squee.online.access.log
+        format console
+    }
+
+    @junk path /.env /wp-login.php /xmlrpc.php /admin /phpmyadmin*
+    respond @junk 404
+
+    handle /api/* {
+        reverse_proxy 127.0.0.1:3000
+    }
+
+    handle {
+        root * /var/www/squee.online
+        try_files {path} /index.html
+        file_server
+    }
+}

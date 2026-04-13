@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Build output and caches
+dist/
+**/dist/
+coverage/
+**/coverage/
+.vite/
+**/.vite/
+*.tsbuildinfo
+apps/web/.tanstack/
+
+# Environment files
+.env
+.env.*
+!.env.example
+!**/.env.example
+
+# OS/editor noise
+.DS_Store
+
+# Nested repositories should not exist in this monorepo.
+.git/
+**/.git/
