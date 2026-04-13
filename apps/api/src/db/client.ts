@@ -11,3 +11,21 @@ const pool = new pg.Pool({
 
 export const db = drizzle(pool, { schema });
 export const dbPool = pool;
+
+export async function checkDatabaseReady() {
+  const client = await pool.connect();
+
+  try {
+    await client.query("begin");
+    await client.query("set local statement_timeout = 2000");
+    const result = await client.query<{ ready: number }>("select 1 as ready");
+    await client.query("commit");
+
+    return result.rows[0]?.ready === 1;
+  } catch (error) {
+    await client.query("rollback").catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}

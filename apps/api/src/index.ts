@@ -1,31 +1,53 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import pino from "pino";
+import { HTTPException } from "hono/http-exception";
 
 import { env } from "./config/env.js";
 import { dbPool } from "./db/client.js";
+import { logger } from "./lib/logger.js";
+import { normalizeError, toErrorResponse } from "./lib/errors.js";
+import { requestIdMiddleware } from "./middleware/request-id.js";
+import { requestLoggerMiddleware } from "./middleware/request-logger.js";
 import { chokepointRoutes } from "./routes/chokepoints.js";
 import { healthRoutes } from "./routes/health.js";
+import { readyRoutes } from "./routes/ready.js";
 import { versionRoutes } from "./routes/version.js";
+import type { AppBindings } from "./types/hono.js";
 
-const logger = pino({
-  level: env.NODE_ENV === "production" ? "info" : "debug",
-});
+const app = new Hono<AppBindings>();
 
-const app = new Hono();
+app.use("*", requestIdMiddleware);
+app.use("*", requestLoggerMiddleware);
 
 app.route("/api", healthRoutes);
+app.route("/api", readyRoutes);
 app.route("/api", versionRoutes);
 app.route("/api", chokepointRoutes);
 
-app.notFound((c) =>
-  c.json(
+app.notFound(() => {
+  throw new HTTPException(404, { message: "Not found" });
+});
+
+app.onError((error, c) => {
+  const appError = normalizeError(error);
+  const requestId = c.get("requestId") ?? crypto.randomUUID();
+
+  logger.error(
     {
-      error: "Not found",
+      code: appError.code,
+      error: appError,
+      method: c.req.method,
+      path: new URL(c.req.url).pathname,
+      requestId,
+      status: appError.status,
     },
-    404,
-  ),
-);
+    "Request failed",
+  );
+
+  c.header("x-request-id", requestId);
+
+  return c.json(toErrorResponse(appError, requestId), appError.status);
+});
 
 const server = serve(
   {

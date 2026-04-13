@@ -5,6 +5,8 @@ const envSchema = z.object({
   DATABASE_URL: z.url(),
   API_PORT: z.coerce.number().int().positive(),
   DB_POOL_MAX: z.coerce.number().int().positive().max(20),
+  LOG_FORMAT: z.enum(["json", "pretty"]),
+  LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]),
   NODE_ENV: z.enum(["development", "test", "production"]),
 });
 

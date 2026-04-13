@@ -44,6 +44,11 @@ The frontend runs at `http://127.0.0.1:5173`.
 The API runs at `http://127.0.0.1:3000`.
 Vite proxies `/api/*` to the API during local development.
 
+Health endpoints:
+
+- `GET /api/health`: process health only
+- `GET /api/ready`: readiness check, including database connectivity
+
 ## Useful Commands
 
 ```bash
