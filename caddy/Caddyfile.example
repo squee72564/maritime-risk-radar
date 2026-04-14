@@ -1,4 +1,6 @@
 squee.online {
+    encode gzip
+
     log {
         output file /var/log/caddy/squee.online.access.log
         format console
