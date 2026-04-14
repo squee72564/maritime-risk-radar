@@ -77,7 +77,8 @@ pnpm dlx shadcn@4.2.0 add button card
 
 ## Environment
 
-Copy the example values when local overrides are needed.
+Copy the example values when local overrides are needed. The root `.env`
+is for Docker Compose. `apps/api/.env` is for the API process and Drizzle.
 
 For Docker Compose:
 
@@ -91,14 +92,21 @@ For the API process and Drizzle commands:
 cp apps/api/.env.example apps/api/.env
 ```
 
-Default local values:
+Root Docker Compose value:
+
+```bash
+POSTGRES_PORT=5432
+```
+
+API values:
 
 ```bash
 DATABASE_URL=postgres://squee:squee_dev_password@127.0.0.1:5432/squee_radar
 API_PORT=3000
 DB_POOL_MAX=5
+LOG_LEVEL=debug
+LOG_FORMAT=pretty
 NODE_ENV=development
-POSTGRES_PORT=5432
 ```
 
 Do not commit real secrets.
