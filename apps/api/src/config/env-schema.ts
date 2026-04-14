@@ -12,9 +12,9 @@ export const envSchema = z.object({
 export type ApiEnv = Readonly<z.infer<typeof envSchema>>;
 
 export class EnvConfigError extends Error {
-  readonly issues: z.ZodIssue[];
+  readonly issues: z.core.$ZodIssue[];
 
-  constructor(issues: z.ZodIssue[]) {
+  constructor(issues: z.core.$ZodIssue[]) {
     super("Invalid API environment configuration");
     this.name = "EnvConfigError";
     this.issues = issues;
