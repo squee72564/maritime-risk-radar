@@ -25,3 +25,5 @@ apps/web/.tanstack/
 # Nested repositories should not exist in this monorepo.
 .git/
 **/.git/
+
+.codex
